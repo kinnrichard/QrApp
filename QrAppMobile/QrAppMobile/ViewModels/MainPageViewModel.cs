@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using Acr.UserDialogs;
+using Newtonsoft.Json;
+using QrAppMobile.Customs;
 using QrAppMobile.Models;
-using QrAppMobile.Views;
+using Rg.Plugins.Popup.Extensions;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
@@ -24,6 +24,7 @@ namespace QrAppMobile.ViewModels
 
         public ICommand ScanIdCommand { get; private set; }
         public ICommand ScreenshotCommand { get; private set; }
+        public ICommand MessageCommand { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -144,6 +145,28 @@ namespace QrAppMobile.ViewModels
             }
         }
 
+        string _messageName;
+        public string MessageName
+        {
+            get { return _messageName; }
+            set
+            {
+                _messageName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        string _messageBody;
+        public string MessageBody
+        {
+            get { return _messageBody; }
+            set
+            {
+                _messageBody = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainPageViewModel()
         {
             
@@ -153,17 +176,41 @@ namespace QrAppMobile.ViewModels
                 (async () => await QrScan());
             ScreenshotCommand = new Command
                (async () => await CaptureScreenshot());
+            MessageCommand = new Command
+               (async () => await CaptureScreenshot());
         }
         public async Task CaptureScreenshot()
         {
             var screenshot = await Screenshot.CaptureAsync();
-            var stream = await screenshot.OpenReadAsync();
+            var stream = await screenshot.OpenReadAsync();          
+        }
 
+        public void CheckInternet()
+        {
             
+
+            if (Connectivity.NetworkAccess != NetworkAccess.Internet)
+            {
+                UserDialogs.Instance.HideLoading();
+                PopUpMessage();
+                MessageName = "No Internet";
+                MessageBody = "You have no internet connection. Please make sure to have a secure internet access.";
+               
+                
+            }
+        }
+
+        public void PopUpMessage()
+        {
+            var popup = new CustomMessage();
+            App.Current.MainPage.Navigation.PushPopupAsync(popup, true);
         }
 
         public async Task QrScan()
         {
+            EntryVisible = false;
+            NoMatchVisible = false;
+
             await GetLocation();
 
             ScanDetailPageViewModel ScanDetail = new ScanDetailPageViewModel();
@@ -174,38 +221,53 @@ namespace QrAppMobile.ViewModels
                 Device.BeginInvokeOnMainThread(async () =>
                 {
                     await App.Current.MainPage.Navigation.PopAsync();
-                    Result = result.Text;                 
+                    UserDialogs.Instance.ShowLoading("Getting info from server...");
+                    await Task.Delay(2000);
+                    UserDialogs.Instance.HideLoading();
+                    Result = result.Text;
                     await GetUsername(Result);
+                    
                 });
-            };          
+            };
         }
 
         public async Task GetUsername(string scanResult)
         {
-            string empId = scanResult;        
-            string employeeUrl = _apiUrl + "username/" + empId;
-            var result = await _client.GetAsync(employeeUrl);
-            string data = await result.Content.ReadAsStringAsync();
-
-            if (result.IsSuccessStatusCode)
+            if (Connectivity.NetworkAccess != NetworkAccess.Internet)
             {
-                string urlContent = await _client.GetStringAsync(employeeUrl);
-                _employee = JsonConvert.DeserializeObject<Employee>(urlContent);
-
-                Name = _employee.EmployeeLastName + "," + _employee.EmployeeFirstName;
-                Position = _employee.EmployeePosition;
-                Department = _employee.EmployeeDepartment;
-                Time = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
-                Success = "Your attendance successfully saved.";
-                EntryVisible = true;
-                NoMatchVisible = false;
+                UserDialogs.Instance.HideLoading();
+                PopUpMessage();
+                MessageName = "No Internet";
+                MessageBody = "You have no internet connection. Please make sure to have a secure internet access.";
             }
             else
             {
-                NoMatch = "No Record.";
-                NoMatchVisible = true;
-                EntryVisible = false;
+                string empId = scanResult;
+                string employeeUrl = _apiUrl + "username/" + empId;
+                var result = await _client.GetAsync(employeeUrl);
+                string data = await result.Content.ReadAsStringAsync();
+
+                if (result.IsSuccessStatusCode)
+                {
+                    string urlContent = await _client.GetStringAsync(employeeUrl);
+                    _employee = JsonConvert.DeserializeObject<Employee>(urlContent);
+
+                    Name = _employee.EmployeeLastName + ", " + _employee.EmployeeFirstName + _employee.EmployeeMiddleName;
+                    Position = _employee.EmployeePosition;
+                    Department = _employee.EmployeeDepartment;
+                    Time = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
+                    Success = "Your attendance successfully saved.";
+                    EntryVisible = true;
+                    NoMatchVisible = false;
+                }
+                else
+                {
+                    NoMatch = "No Record.";
+                    NoMatchVisible = true;
+                    EntryVisible = false;
+                }
             }
+            
         }
 
         public async Task GetLocation()
@@ -245,7 +307,7 @@ namespace QrAppMobile.ViewModels
             }
             catch (Exception ex)
             {
-                //test
+                
             }
         }
     }
