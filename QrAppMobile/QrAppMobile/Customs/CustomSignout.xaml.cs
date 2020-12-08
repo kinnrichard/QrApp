@@ -12,16 +12,18 @@ using Xamarin.Forms.Xaml;
 namespace QrAppMobile.Customs
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class CustomMessage : PopupPage
+    public partial class CustomSignout : PopupPage
     {
-        public CustomMessage()
+        public CustomSignout()
         {
             InitializeComponent();
         }
-
-        private void OnClickOk(object sender, EventArgs e)
+        
+        private void OnEXit(object sender, EventArgs e)
         {
             App.Current.MainPage.Navigation.PopPopupAsync();
+            App.Current.MainPage.Navigation.PopAsync();
+
         }
     }
 }

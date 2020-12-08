@@ -3,7 +3,7 @@
              xmlns:rg="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
              xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="QrAppMobile.Customs.CustomMessage"
+             x:Class="QrAppMobile.Customs.CustomSignout"
              xmlns:viewModel="clr-namespace:QrAppMobile.ViewModels">
 
     <ContentPage.BindingContext>
@@ -15,14 +15,15 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        
         <Frame Grid.RowSpan="2" HeightRequest="225" VerticalOptions="End" CornerRadius="30" Padding="10,0" BackgroundColor="White">
             <Grid VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
                 <StackLayout Orientation="Vertical" Spacing="10" VerticalOptions="Center" HorizontalOptions="Center">
-                    <Label Text="No Internet" FontSize="30" FontAttributes="Bold" TextColor="#1abc9c" HorizontalTextAlignment="Center"/>
-                    <Label Text="You are not currently connected to internet. Make sure to have internet connection before scanning your ID." TextColor="#363636" FontSize="20"/>
+                    <Label Text="Exit" FontSize="30" FontAttributes="Bold" TextColor="#1abc9c" HorizontalTextAlignment="Center"/>
+                    <Label Text="Are you sure you want to exit?" TextColor="#363636" FontSize="20"/>
                 </StackLayout>
             </Grid>
         </Frame>
-        <Button Grid.Row="1" Text="Continue" TextColor="White" HeightRequest="45" BackgroundColor="#1abc9c" Clicked="OnClickOk"/>
+        <Button Grid.Row="1" Text="Continue" TextColor="White" HeightRequest="45" BackgroundColor="#1abc9c" Clicked="OnEXit"/>
     </Grid>
 </rg:PopupPage>

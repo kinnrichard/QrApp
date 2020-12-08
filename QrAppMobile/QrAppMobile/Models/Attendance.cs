@@ -10,8 +10,8 @@ namespace QrAppMobile.Models
         public string EmployeeId { get; set; }
         public string EmployeeName { get; set; }
         public DateTime AttendanceDate { get; set; }
-        public DateTime TimeIn { get; set; }
-        public DateTime TimeOut { get; set; }
+        public string TimeIn { get; set; }
+        public string TimeOut { get; set; }
         public string Location { get; set; }
     }
 }

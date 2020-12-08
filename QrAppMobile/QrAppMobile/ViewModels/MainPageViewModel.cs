@@ -16,21 +16,15 @@ using ZXing.Net.Mobile.Forms;
 
 namespace QrAppMobile.ViewModels
 {
-    public class MainPageViewModel : INotifyPropertyChanged
+    public class MainPageViewModel : BaseViewModel
     {
         private Employee _employee = new Employee();
         private readonly HttpClient _client = new HttpClient();
-        private const string _apiUrl = "https://qrappwebapi.azurewebsites.net/api/employees/";
+        private const string _employeeApi = "https://qrappwebapi.azurewebsites.net/api/employees/username/";
 
         public ICommand ScanIdCommand { get; private set; }
         public ICommand ScreenshotCommand { get; private set; }
-        public ICommand MessageCommand { get; private set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        public ICommand ExitCommand { get; private set; }
 
         bool _entryVisible;
         public bool EntryVisible
@@ -168,31 +162,31 @@ namespace QrAppMobile.ViewModels
         }
 
         public MainPageViewModel()
-        {
-            
+        {         
             EntryVisible = false;
             NoMatchVisible = false;
+
             ScanIdCommand = new Command
                 (async () => await QrScan());
             ScreenshotCommand = new Command
                (async () => await CaptureScreenshot());
-            MessageCommand = new Command
-               (async () => await CaptureScreenshot());
+            ExitCommand = new Command(ExitPopup);
         }
+
+        //ScreenCapturing
         public async Task CaptureScreenshot()
         {
             var screenshot = await Screenshot.CaptureAsync();
             var stream = await screenshot.OpenReadAsync();          
         }
 
+        //Check internet Connection
         public void CheckInternet()
-        {
-            
-
+        {           
             if (Connectivity.NetworkAccess != NetworkAccess.Internet)
             {
                 UserDialogs.Instance.HideLoading();
-                PopUpMessage();
+                NoInternetPopup();
                 MessageName = "No Internet";
                 MessageBody = "You have no internet connection. Please make sure to have a secure internet access.";
                
@@ -200,20 +194,28 @@ namespace QrAppMobile.ViewModels
             }
         }
 
-        public void PopUpMessage()
+        //Using Custom popup message box
+        public void NoInternetPopup()
         {
             var popup = new CustomMessage();
             App.Current.MainPage.Navigation.PushPopupAsync(popup, true);
         }
 
+        //Using Custom popup message box
+        public void ExitPopup()
+        {
+            var popup = new CustomSignout();
+            App.Current.MainPage.Navigation.PushPopupAsync(popup, true);
+        }
+
+
+        //Opening QR Scanner 
         public async Task QrScan()
         {
+            await GetLocation();
             EntryVisible = false;
             NoMatchVisible = false;
 
-            await GetLocation();
-
-            ScanDetailPageViewModel ScanDetail = new ScanDetailPageViewModel();
             var scan = new ZXingScannerPage();
             await App.Current.MainPage.Navigation.PushAsync(scan);
             scan.OnScanResult += (result) =>
@@ -221,29 +223,27 @@ namespace QrAppMobile.ViewModels
                 Device.BeginInvokeOnMainThread(async () =>
                 {
                     await App.Current.MainPage.Navigation.PopAsync();
-                    UserDialogs.Instance.ShowLoading("Getting info from server...");
+                    UserDialogs.Instance.ShowLoading("Getting data from server...");
                     await Task.Delay(2000);
                     UserDialogs.Instance.HideLoading();
-                    Result = result.Text;
-                    await GetUsername(Result);
                     
+                    Result = result.Text;
+                    await CheckUsername(Result);                   
                 });
             };
         }
 
-        public async Task GetUsername(string scanResult)
+        //Getting username if exist in Web API
+        public async Task CheckUsername(string scanResult)
         {
             if (Connectivity.NetworkAccess != NetworkAccess.Internet)
             {
-                UserDialogs.Instance.HideLoading();
-                PopUpMessage();
-                MessageName = "No Internet";
-                MessageBody = "You have no internet connection. Please make sure to have a secure internet access.";
+                NoInternetPopup();             
             }
             else
             {
                 string empId = scanResult;
-                string employeeUrl = _apiUrl + "username/" + empId;
+                string employeeUrl = _employeeApi + empId;
                 var result = await _client.GetAsync(employeeUrl);
                 string data = await result.Content.ReadAsStringAsync();
 
@@ -266,10 +266,10 @@ namespace QrAppMobile.ViewModels
                     NoMatchVisible = true;
                     EntryVisible = false;
                 }
-            }
-            
+            }           
         }
 
+        //Getting location address using Geocoding
         public async Task GetLocation()
         {
             Location location = await Geolocation.GetLastKnownLocationAsync();
@@ -303,11 +303,9 @@ namespace QrAppMobile.ViewModels
             }
             catch (FeatureNotSupportedException notsuppex)
             {
-
             }
             catch (Exception ex)
-            {
-                
+            {                
             }
         }
     }
