@@ -245,7 +245,7 @@ namespace QrAppMobile.ViewModels
             }
             catch (Exception ex)
             {
-
+                //test
             }
         }
     }
