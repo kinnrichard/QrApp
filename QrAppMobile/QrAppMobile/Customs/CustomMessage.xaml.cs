@@ -1,4 +1,5 @@
-﻿using Rg.Plugins.Popup.Pages;
+﻿using Rg.Plugins.Popup.Extensions;
+using Rg.Plugins.Popup.Pages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,12 @@ namespace QrAppMobile.Customs
         public CustomMessage()
         {
             InitializeComponent();
+        }
+
+        private void OnClickOk(object sender, EventArgs e)
+        {
+            App.Current.MainPage.Navigation.PopPopupAsync();
+
         }
     }
 }
