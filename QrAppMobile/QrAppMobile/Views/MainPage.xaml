@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="QrAppMobile.MainPage"
+             xmlns:viewModel="clr-namespace:QrAppMobile.ViewModels">
+
+    <ContentPage.BindingContext>
+        <viewModel:MainPageViewModel />
+    </ContentPage.BindingContext>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Name="iconexample" Icon="ss.png" Priority="0" Order="Primary" Command="{Binding Screenshot}"/>
+    </ContentPage.ToolbarItems>
+    <ScrollView>
+    <Grid RowSpacing="20" Grid.Row="1" Margin="20,0,20,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackLayout>
+            <Label Text="QR Code Attendance"  Opacity="0.4" FontSize="40" FontAttributes="Bold" TextColor="Black" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+        </StackLayout>
+        <StackLayout BackgroundColor="Transparent" Spacing="0" VerticalOptions="Center">
+            <Image Source="qr.png" Opacity="0.7" VerticalOptions="CenterAndExpand" HeightRequest="300" WidthRequest="200"/>
+            <Label Margin="0,32,0,8" FontSize="10" HorizontalTextAlignment="Center" Text="" VerticalTextAlignment="Center" />
+            <Label Text="Employee ID" FontSize="15" IsVisible="{Binding EntryVisible}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+            <Label Text="{Binding Result}" IsVisible="{Binding EntryVisible}" FontSize="25" HorizontalTextAlignment="Start" VerticalTextAlignment="Start" />
+            <Label Text="Employee name" FontSize="15" IsVisible="{Binding EntryVisible}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+            <Label Text="{Binding Name}" IsVisible="{Binding EntryVisible}" FontSize="25" HorizontalTextAlignment="Start" VerticalTextAlignment="Start" />
+            <Label Text="Position" FontSize="15" IsVisible="{Binding EntryVisible}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+            <Label Text="{Binding Position}" IsVisible="{Binding EntryVisible}" FontSize="25" HorizontalTextAlignment="Start" VerticalTextAlignment="Start" />
+            <Label Text="Department" FontSize="15" IsVisible="{Binding EntryVisible}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+            <Label Text="{Binding Department}" IsVisible="{Binding EntryVisible}" FontSize="25" HorizontalTextAlignment="Start" VerticalTextAlignment="Start" />
+            <Label Text="Time" FontSize="15" IsVisible="{Binding EntryVisible}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+            <Label Text="{Binding Time}" IsVisible="{Binding EntryVisible}" FontSize="25"  HorizontalTextAlignment="Start" VerticalTextAlignment="Start" />
+            <Label Text="Location" FontSize="15" IsVisible="{Binding EntryVisible}" HorizontalTextAlignment="Start" VerticalTextAlignment="Start"/>
+            <Label Text="{Binding CurrentLocation}" IsVisible="{Binding EntryVisible}" FontSize="25" HorizontalTextAlignment="Start" VerticalTextAlignment="Start" />
+            <Label Margin="0,32,0,0" FontSize="5" HorizontalTextAlignment="Center" Text="" VerticalTextAlignment="Center" />
+            <Label Text="{Binding Success}" IsVisible="{Binding EntryVisible}" FontSize="20" TextColor="Green" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+            <Label Text="{Binding NoMatch}" IsVisible="{Binding NoMatchVisible}" FontSize="30" TextColor="Red" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+            <Label Margin="0,32,0,0" FontSize="5" HorizontalTextAlignment="Center" Text="" VerticalTextAlignment="Center" />
+            <Button Text="Scan ID" BackgroundColor="#1abc9c" FontAttributes="Bold" FontFamily="Arial" FontSize="Large" TextColor="White" HeightRequest="50" WidthRequest="100" VerticalOptions="Center" CornerRadius="30" Command="{Binding ScanIdCommand}"/>
+            <Label FontSize="5" HorizontalTextAlignment="Center" Text="" VerticalTextAlignment="Center" />
+            <Button Text="Close" BackgroundColor="Transparent" FontAttributes="Bold" FontSize="Large" TextColor="Black" HeightRequest="50" WidthRequest="100" VerticalOptions="Center" CornerRadius="30"/>
+            
+        </StackLayout>
+    </Grid>
+    </ScrollView>
+</ContentPage>
