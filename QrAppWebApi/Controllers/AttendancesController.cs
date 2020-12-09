@@ -46,22 +46,43 @@ namespace QrAppWebApi.Controllers
             return Ok(attendance);
         }
 
-        [HttpGet("employee/{empid}")]
-        public async Task<IActionResult> GetEmployeeUserName([FromRoute] string empid)
+        // GET: api/Attendances/employee/5
+        [HttpGet("employee/{empid}/{dateToday}/timein/")]
+        public async Task<IActionResult> GetAttendanceTimeIn([FromRoute] string empid, string dateToday)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var account = await _context.Attendances.FirstOrDefaultAsync(a => a.EmployeeId == empid);
+            var attendance = await _context.Attendances.FirstOrDefaultAsync(a => a.EmployeeId == empid && a.AttendanceDate == dateToday );
 
-            if (account == null)
+            if (attendance.TimeIn != null)
             {
                 return NotFound();
             }
 
-            return Ok(account);
+            return Ok(attendance);
+        }
+
+      
+        // GET: api/Attendances/employee/5
+        [HttpGet("employee/{empid}/{dateToday}/timeout/")]
+        public async Task<IActionResult> GetAttendanceTimeOut([FromRoute] string empid, string dateToday)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var attendance = await _context.Attendances.FirstOrDefaultAsync(a => a.EmployeeId == empid && a.AttendanceDate == dateToday);
+
+            if (attendance.TimeOut != null)
+            {
+                return NotFound();
+            }
+
+            return Ok(attendance);
         }
 
         // PUT: api/Attendances/5

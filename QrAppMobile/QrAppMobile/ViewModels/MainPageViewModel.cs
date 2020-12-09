@@ -19,8 +19,11 @@ namespace QrAppMobile.ViewModels
     public class MainPageViewModel : BaseViewModel
     {
         private Employee _employee = new Employee();
+        private Attendance _attendance = new Attendance();
+
         private readonly HttpClient _client = new HttpClient();
         private const string _employeeApi = "https://qrappwebapi.azurewebsites.net/api/employees/username/";
+        private const string _attendanceApi = "https://qrappwebapi.azurewebsites.net/api/attendances/employee/";
 
         public ICommand ScanIdCommand { get; private set; }
         public ICommand ScreenshotCommand { get; private set; }
@@ -187,10 +190,6 @@ namespace QrAppMobile.ViewModels
             {
                 UserDialogs.Instance.HideLoading();
                 NoInternetPopup();
-                MessageName = "No Internet";
-                MessageBody = "You have no internet connection. Please make sure to have a secure internet access.";
-               
-                
             }
         }
 
@@ -208,11 +207,11 @@ namespace QrAppMobile.ViewModels
             App.Current.MainPage.Navigation.PushPopupAsync(popup, true);
         }
 
-
         //Opening QR Scanner 
         public async Task QrScan()
         {
             await GetLocation();
+
             EntryVisible = false;
             NoMatchVisible = false;
 
@@ -244,18 +243,31 @@ namespace QrAppMobile.ViewModels
             {
                 string empId = scanResult;
                 string employeeUrl = _employeeApi + empId;
-                var result = await _client.GetAsync(employeeUrl);
-                string data = await result.Content.ReadAsStringAsync();
+                string attendanceDate = DateTime.Now.ToString("MM/dd/yyyy");
+                string attendanceTime = DateTime.Now.ToString("hh:mmtt");
+                var employeeResult = await _client.GetAsync(employeeUrl);
+                string employeeData = await employeeResult.Content.ReadAsStringAsync();
 
-                if (result.IsSuccessStatusCode)
+                if (employeeResult.IsSuccessStatusCode)
                 {
+                    string attendanceUrl = _attendanceApi + empId + "/" + attendanceDate + "/" + attendanceTime;
+                    var attendanceResult = await _client.GetAsync(attendanceUrl);
+                    string attendanceData = await attendanceResult.Content.ReadAsStringAsync();
+                    if (attendanceResult.IsSuccessStatusCode)
+                    {
+
+                    }
+
+
+
+
                     string urlContent = await _client.GetStringAsync(employeeUrl);
                     _employee = JsonConvert.DeserializeObject<Employee>(urlContent);
 
                     Name = _employee.EmployeeLastName + ", " + _employee.EmployeeFirstName + _employee.EmployeeMiddleName;
                     Position = _employee.EmployeePosition;
                     Department = _employee.EmployeeDepartment;
-                    Time = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
+                    Time = DateTime.Now.ToString("MM/dd/yyyy") + " " + DateTime.Now.ToString("hh:mmtt");
                     Success = "Your attendance successfully saved.";
                     EntryVisible = true;
                     NoMatchVisible = false;
@@ -268,6 +280,7 @@ namespace QrAppMobile.ViewModels
                 }
             }           
         }
+      
 
         //Getting location address using Geocoding
         public async Task GetLocation()
