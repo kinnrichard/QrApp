@@ -253,24 +253,26 @@ namespace QrAppMobile.ViewModels
                     string attendanceUrl = _attendanceApi + empId + "/" + attendanceDate + "/" + attendanceTime;
                     var attendanceResult = await _client.GetAsync(attendanceUrl);
                     string attendanceData = await attendanceResult.Content.ReadAsStringAsync();
+
                     if (attendanceResult.IsSuccessStatusCode)
                     {
-
+                        NoMatch = "You already have attendance.";
+                        NoMatchVisible = true;
+                        EntryVisible = false;
                     }
+                    else
+                    {
+                        string urlContent = await _client.GetStringAsync(employeeUrl);
+                        _employee = JsonConvert.DeserializeObject<Employee>(urlContent);
 
-
-
-
-                    string urlContent = await _client.GetStringAsync(employeeUrl);
-                    _employee = JsonConvert.DeserializeObject<Employee>(urlContent);
-
-                    Name = _employee.EmployeeLastName + ", " + _employee.EmployeeFirstName + _employee.EmployeeMiddleName;
-                    Position = _employee.EmployeePosition;
-                    Department = _employee.EmployeeDepartment;
-                    Time = DateTime.Now.ToString("MM/dd/yyyy") + " " + DateTime.Now.ToString("hh:mmtt");
-                    Success = "Your attendance successfully saved.";
-                    EntryVisible = true;
-                    NoMatchVisible = false;
+                        Name = _employee.EmployeeLastName + ", " + _employee.EmployeeFirstName + _employee.EmployeeMiddleName;
+                        Position = _employee.EmployeePosition;
+                        Department = _employee.EmployeeDepartment;
+                        Time = DateTime.Now.ToString("MM/dd/yyyy") + " " + DateTime.Now.ToString("hh:mmtt");
+                        Success = "Your attendance successfully saved.";
+                        EntryVisible = true;
+                        NoMatchVisible = false;
+                    }                
                 }
                 else
                 {
