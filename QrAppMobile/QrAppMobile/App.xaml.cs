@@ -1,5 +1,6 @@
 ﻿
 using System;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -9,13 +10,14 @@ namespace QrAppMobile
     {
         public App()
         {
+
             InitializeComponent();
 
             MainPage = new NavigationPage(new MainPage());
 
             ((NavigationPage)Application.Current.MainPage).BarBackgroundColor = Color.Transparent;
             ((NavigationPage)Application.Current.MainPage).BarTextColor = Color.Black;
-
+            VersionTracking.Track();
         }
 
         protected override void OnStart()
