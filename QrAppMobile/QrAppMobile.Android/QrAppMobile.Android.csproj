@@ -119,9 +119,6 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\ss.png" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\QrAppMobile\QrAppMobile.csproj">
       <Project>{CA398D50-9A0A-4D10-8B30-6C69D339F61A}</Project>
       <Name>QrAppMobile</Name>
@@ -141,6 +138,12 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\cross.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\time.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\camera.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <ProjectExtensions>

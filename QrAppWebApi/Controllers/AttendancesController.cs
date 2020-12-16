@@ -57,7 +57,7 @@ namespace QrAppWebApi.Controllers
 
             var attendance = await _context.Attendances.FirstOrDefaultAsync(a => a.EmployeeId == empid && a.AttendanceDate == dateToday );
 
-            if (attendance.TimeIn != null)
+            if (attendance.TimeIn != null || attendance.TimeOut !=null)
             {
                 return NotFound();
             }
